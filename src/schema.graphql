@@ -1,0 +1,53 @@
+type Query {
+  me: User
+}
+
+type Mutation {
+  login(email: string!, password: string!): String!
+  logout(token: string!): String!
+  signUpByEmail(data: signUpByEmailInput!): String!
+}
+
+input signUpByEmailInput {
+  email: String!
+  password: String!
+  phone: String!
+  firstName: String!
+  lastName: String!
+}
+
+type Settings {
+  pushNotificationsEnabled: Boolean!
+  shouldCompressPhotos: Boolean!
+  shouldCompressVideos: Boolean!
+  shouldUseDarkTheme: Boolean!
+  enableGeolocation: Boolean!
+}
+
+type User {
+  email: String!
+  profileImage: String
+  firstName: String!
+  lastName: String!
+  phone: String!
+  settings: Settings
+}
+
+type Photo {
+  name: String!
+  url: String!
+  thumbnailUrl: String!
+}
+
+type Message {
+  content: String!
+  sentTime: String!
+  senderId: String!
+}
+
+type Conversation {
+  conversationName: String!
+  media: [Photo!]
+  messages: [Message!]!
+  notificationsEnabled: Boolean!
+}

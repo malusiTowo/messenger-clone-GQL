@@ -1,0 +1,9 @@
+package.js
+package.json
+node_modules/
+bower_components/
+.npm/
+build/
+.meteor/
+packages/
+.git/
