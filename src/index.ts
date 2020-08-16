@@ -1,13 +1,18 @@
-import resolvers from './resolvers/index';
-import context from './middleware/context';
+/* eslint-disable import/first */
+// eslint-disable-next-line import/newline-after-import
+require("dotenv").config();
+import "../config/db";
 
-require('dotenv').config();
+import { ApolloServer, gql } from "apollo-server";
+import fs from "fs";
+import path from "path";
 
-const { ApolloServer, gql } = require('apollo-server');
-const fs = require('fs');
-const path = require('path');
+import resolvers from "./resolvers/index";
+import context from "./middleware/context";
 
-const typeDefs = gql(fs.readFileSync(path.join(__dirname, 'schema.graphql'), { encoding: 'utf8' }));
+const typeDefs = gql(
+  fs.readFileSync(path.join(__dirname, "schema.graphql"), { encoding: "utf8" }),
+);
 
 const PORT = process.env.PORT || 4000;
 
@@ -20,7 +25,7 @@ const server = new ApolloServer({
   playground: true,
 });
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   server.listen({ port: PORT }).then(({ url }: { url: string }) => {
     console.log(`🚀 app running at ${url}`);
   });

@@ -1,10 +1,10 @@
 type Query {
-  me: User
+  me: String
 }
 
 type Mutation {
-  login(email: string!, password: string!): String!
-  logout(token: string!): String!
+  login(email: String!, password: String!): String!
+  logout(token: String!): String!
   signUpByEmail(data: signUpByEmailInput!): String!
 }
 
