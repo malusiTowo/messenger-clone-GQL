@@ -1,6 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+(async () => {
+  const URI = process.env.MONGODB_URI || "";
+  try {
+    mongoose.connect(URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  } catch (err) {
+    console.log("Error connecting to database", err);
+  }
+})();
 
 export default mongoose;
