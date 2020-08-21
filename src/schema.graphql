@@ -21,7 +21,7 @@ type Settings {
   shouldCompressPhotos: Boolean!
   shouldCompressVideos: Boolean!
   shouldUseDarkTheme: Boolean!
-  enableGeolocation: Boolean!
+  geolocationEnabled: Boolean!
 }
 
 type User {

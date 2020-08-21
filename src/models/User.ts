@@ -10,8 +10,8 @@ interface IUserSchema extends Document {
   password: string;
   phone: string;
   email: string;
-  profileImage: string;
-  tokens: [{ access: string; token: string }];
+  profileImage?: string;
+  tokens?: [{ access: string; token: string }];
 }
 
 const UserSchema = new Schema(
@@ -98,7 +98,7 @@ UserSchema.methods.generateAuthToken = function () {
     .catch((e: Error) => console.log(e));
 };
 
-UserSchema.statics.findByToken = function (token: string) {
+UserSchema.statics.findByToken = function (token: string = "token") {
   const user = this;
   let decoded = null;
   const secret = process.env.JWT_SECRET || "";
@@ -106,12 +106,14 @@ UserSchema.statics.findByToken = function (token: string) {
   try {
     decoded = Object(jwt.verify(token, secret));
   } catch (e) {
-    console.log(e);
-    return Promise.reject();
+    // console.log("error jwt", e);
+    // return Promise.reject();
   }
 
+  if (!decoded) return null;
+
   return user.findOne({
-    _id: decoded?._id,
+    _id: decoded._id,
     "tokens.token": token,
     "tokens.access": "auth",
   });

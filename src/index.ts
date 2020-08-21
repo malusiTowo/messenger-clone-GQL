@@ -2,31 +2,24 @@
 // eslint-disable-next-line import/newline-after-import
 require("dotenv").config();
 import "../config/db";
+import express from "express";
 
-import { ApolloServer, gql } from "apollo-server";
-import fs from "fs";
-import path from "path";
-
-import resolvers from "./resolvers/index";
+import graphql from "./servers/graphql";
+import schema from "./schema";
 import context from "./middleware/context";
 
-const typeDefs = gql(
-  fs.readFileSync(path.join(__dirname, "schema.graphql"), { encoding: "utf8" }),
-);
+(() => {
+  const port = process.env.PORT || 4000;
+  const app = express();
 
-const PORT = process.env.PORT || 4000;
+  const config = {
+    schema,
+    context,
+  };
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context,
-  tracing: true,
-  introspection: true,
-  playground: true,
-});
+  graphql(app, config);
 
-if (process.env.NODE_ENV !== "test") {
-  server.listen({ port: PORT }).then(({ url }: { url: string }) => {
-    console.log(`🚀 app running at ${url}`);
+  app.listen({ port }, () => {
+    console.log(`🚀  Server ready http://localhost:${port}`);
   });
-}
+})();
