@@ -18,7 +18,6 @@ type Request = {
 const context = async ({ req }: Request) => {
   const token = req.headers.authorization || "";
   const user = await User.findByToken(token);
-
   return { user, token, datasources };
 };
 

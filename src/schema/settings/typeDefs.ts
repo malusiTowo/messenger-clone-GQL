@@ -2,8 +2,12 @@ import gql from "graphql-tag";
 
 const typeDefs = gql`
   extend type Mutation {
-    updateSettings(updatedSettings: updatedSettingsInput!): Settings
-    resetSettings: Settings
+    updateSettings(updatedSettings: updatedSettingsInput!): Settings!
+    resetSettings: Settings!
+  }
+
+  extend type Query {
+    userSettings: Settings!
   }
 
   input updatedSettingsInput {

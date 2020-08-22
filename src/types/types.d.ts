@@ -29,19 +29,9 @@ export interface SignUpByEmailInput {
 // ====================================================
 
 export interface Query {
+  userSettings: Settings;
+
   me?: Maybe<string>;
-}
-
-export interface Mutation {
-  updateSettings?: Maybe<Settings>;
-
-  resetSettings?: Maybe<Settings>;
-
-  login: AuthUser;
-
-  logout: string;
-
-  signUpByEmail: AuthUser;
 }
 
 export interface Settings {
@@ -54,6 +44,18 @@ export interface Settings {
   shouldUseDarkTheme: boolean;
 
   geolocationEnabled: boolean;
+}
+
+export interface Mutation {
+  updateSettings: Settings;
+
+  resetSettings: Settings;
+
+  login: AuthUser;
+
+  logout: string;
+
+  signUpByEmail: AuthUser;
 }
 
 export interface AuthUser {
@@ -141,73 +143,21 @@ export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
 
 export namespace QueryResolvers {
   export interface Resolvers<TContext = Context, TypeParent = {}> {
+    userSettings?: UserSettingsResolver<Settings, TypeParent, TContext>;
+
     me?: MeResolver<Maybe<string>, TypeParent, TContext>;
   }
 
+  export type UserSettingsResolver<
+    R = Settings,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
   export type MeResolver<R = Maybe<string>, Parent = {}, TContext = Context> = Resolver<
     R,
     Parent,
     TContext
   >;
-}
-
-export namespace MutationResolvers {
-  export interface Resolvers<TContext = Context, TypeParent = {}> {
-    updateSettings?: UpdateSettingsResolver<Maybe<Settings>, TypeParent, TContext>;
-
-    resetSettings?: ResetSettingsResolver<Maybe<Settings>, TypeParent, TContext>;
-
-    login?: LoginResolver<AuthUser, TypeParent, TContext>;
-
-    logout?: LogoutResolver<string, TypeParent, TContext>;
-
-    signUpByEmail?: SignUpByEmailResolver<AuthUser, TypeParent, TContext>;
-  }
-
-  export type UpdateSettingsResolver<
-    R = Maybe<Settings>,
-    Parent = {},
-    TContext = Context
-  > = Resolver<R, Parent, TContext, UpdateSettingsArgs>;
-  export interface UpdateSettingsArgs {
-    updatedSettings: UpdatedSettingsInput;
-  }
-
-  export type ResetSettingsResolver<
-    R = Maybe<Settings>,
-    Parent = {},
-    TContext = Context
-  > = Resolver<R, Parent, TContext>;
-  export type LoginResolver<R = AuthUser, Parent = {}, TContext = Context> = Resolver<
-    R,
-    Parent,
-    TContext,
-    LoginArgs
-  >;
-  export interface LoginArgs {
-    email: string;
-
-    password: string;
-  }
-
-  export type LogoutResolver<R = string, Parent = {}, TContext = Context> = Resolver<
-    R,
-    Parent,
-    TContext,
-    LogoutArgs
-  >;
-  export interface LogoutArgs {
-    token: string;
-  }
-
-  export type SignUpByEmailResolver<
-    R = AuthUser,
-    Parent = {},
-    TContext = Context
-  > = Resolver<R, Parent, TContext, SignUpByEmailArgs>;
-  export interface SignUpByEmailArgs {
-    data: SignUpByEmailInput;
-  }
 }
 
 export namespace SettingsResolvers {
@@ -252,6 +202,65 @@ export namespace SettingsResolvers {
     Parent = Settings,
     TContext = Context
   > = Resolver<R, Parent, TContext>;
+}
+
+export namespace MutationResolvers {
+  export interface Resolvers<TContext = Context, TypeParent = {}> {
+    updateSettings?: UpdateSettingsResolver<Settings, TypeParent, TContext>;
+
+    resetSettings?: ResetSettingsResolver<Settings, TypeParent, TContext>;
+
+    login?: LoginResolver<AuthUser, TypeParent, TContext>;
+
+    logout?: LogoutResolver<string, TypeParent, TContext>;
+
+    signUpByEmail?: SignUpByEmailResolver<AuthUser, TypeParent, TContext>;
+  }
+
+  export type UpdateSettingsResolver<
+    R = Settings,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, UpdateSettingsArgs>;
+  export interface UpdateSettingsArgs {
+    updatedSettings: UpdatedSettingsInput;
+  }
+
+  export type ResetSettingsResolver<
+    R = Settings,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type LoginResolver<R = AuthUser, Parent = {}, TContext = Context> = Resolver<
+    R,
+    Parent,
+    TContext,
+    LoginArgs
+  >;
+  export interface LoginArgs {
+    email: string;
+
+    password: string;
+  }
+
+  export type LogoutResolver<R = string, Parent = {}, TContext = Context> = Resolver<
+    R,
+    Parent,
+    TContext,
+    LogoutArgs
+  >;
+  export interface LogoutArgs {
+    token: string;
+  }
+
+  export type SignUpByEmailResolver<
+    R = AuthUser,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, SignUpByEmailArgs>;
+  export interface SignUpByEmailArgs {
+    data: SignUpByEmailInput;
+  }
 }
 
 export namespace AuthUserResolvers {
@@ -348,8 +357,8 @@ export interface DeprecatedDirectiveArgs {
 
 export type IResolvers<TContext = Context> = {
   Query?: QueryResolvers.Resolvers<TContext>;
-  Mutation?: MutationResolvers.Resolvers<TContext>;
   Settings?: SettingsResolvers.Resolvers<TContext>;
+  Mutation?: MutationResolvers.Resolvers<TContext>;
   AuthUser?: AuthUserResolvers.Resolvers<TContext>;
   User?: UserResolvers.Resolvers<TContext>;
 } & { [typeName: string]: never };
