@@ -4,12 +4,13 @@ import { IMessage, MessageSchema } from "./Message";
 const { Schema } = mongoose;
 
 interface IConversationSchema extends Document {
-  createdAt: Date;
-  updatedAt: Date;
-  senderId: string;
-  messages: Types.Array<IMessage>;
+  id?: Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  // senderId: string;
+  messages?: Types.Array<IMessage>;
   participants: Types.Array<string>;
-  conversationName: string;
+  conversationName?: string;
 }
 
 const ConversationSchema = new Schema(
@@ -22,11 +23,14 @@ const ConversationSchema = new Schema(
       type: Date,
       default: new Date(),
     },
-    senderId: {
-      type: Types.ObjectId,
-      ref: "user",
+    // senderId: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "user",
+    // },
+    messages: {
+      type: [MessageSchema],
+      default: [],
     },
-    messages: [MessageSchema],
     participants: [
       {
         type: String,

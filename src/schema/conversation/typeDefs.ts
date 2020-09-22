@@ -2,10 +2,11 @@ import gql from "graphql-tag";
 
 const typeDefs = gql`
   extend type Mutation {
-    sendMessage(id: ID!, newMessage: sendMessageInput!): Message!
     createConversation(data: createConversationInput!): Conversation!
+    sendMessage(conversationId: ID!, newMessage: sendMessageInput!): Message!
     updateConversationSettings(
-      updatedConvoSettings: updateConversationSettings!
+      conversationId: ID!
+      updatedConvoSettings: updatedConvoSettings!
     ): Conversation!
   }
 
@@ -19,9 +20,10 @@ const typeDefs = gql`
   }
 
   type Conversation {
+    id: ID!
     senderId: ID!
     messages: [Message!]!
-    participants: [ID!]!
+    participants: [User!]!
     conversationName: String
   }
 

@@ -1,5 +1,21 @@
 export type Maybe<T> = T | null;
 
+export interface CreateConversationInput {
+  participants: string[];
+
+  conversationName?: Maybe<string>;
+}
+
+export interface SendMessageInput {
+  content: string;
+
+  sentTime?: Maybe<string>;
+}
+
+export interface UpdatedConvoSettings {
+  conversationName: string;
+}
+
 export interface UpdatedSettingsInput {
   pushNotificationsEnabled?: Maybe<boolean>;
 
@@ -24,14 +40,61 @@ export interface SignUpByEmailInput {
   lastName: string;
 }
 
+export enum OnlineStatus {
+  Online = "ONLINE",
+  Offline = "OFFLINE",
+}
+
+export enum ContactRequestStatus {
+  PendingByRecepient = "PENDING_BY_RECEPIENT",
+  Accepted = "ACCEPTED",
+  Blocked = "BLOCKED",
+}
+
 // ====================================================
 // Types
 // ====================================================
 
 export interface Query {
+  userContacts: Contact[];
+
+  userContact: Contact;
+
+  getConversation: Conversation;
+
   userSettings: Settings;
 
   me?: Maybe<string>;
+}
+
+export interface Contact {
+  name: string;
+
+  phone: string;
+
+  status: OnlineStatus;
+
+  lastConnection?: Maybe<string>;
+
+  requestStatus: ContactRequestStatus;
+}
+
+export interface Conversation {
+  id: string;
+
+  senderId: string;
+
+  messages: Message[];
+
+  participants: string[];
+
+  conversationName?: Maybe<string>;
+}
+
+export interface Message {
+  content: string;
+
+  sentTime: string;
 }
 
 export interface Settings {
@@ -47,6 +110,18 @@ export interface Settings {
 }
 
 export interface Mutation {
+  addFriend: Contact;
+
+  removeFriend: Contact;
+
+  acceptFriendRequest?: Maybe<Contact>;
+
+  createConversation: Conversation;
+
+  sendMessage: Message;
+
+  updateConversationSettings: Conversation;
+
   updateSettings: Settings;
 
   resetSettings: Settings;
@@ -80,6 +155,34 @@ export interface User {
 // Arguments
 // ====================================================
 
+export interface UserContactQueryArgs {
+  id: string;
+}
+export interface GetConversationQueryArgs {
+  id: string;
+}
+export interface AddFriendMutationArgs {
+  friendId: string;
+}
+export interface RemoveFriendMutationArgs {
+  friendId: string;
+}
+export interface AcceptFriendRequestMutationArgs {
+  id: string;
+}
+export interface CreateConversationMutationArgs {
+  data: CreateConversationInput;
+}
+export interface SendMessageMutationArgs {
+  conversationId: string;
+
+  newMessage: SendMessageInput;
+}
+export interface UpdateConversationSettingsMutationArgs {
+  conversationId: string;
+
+  updatedConvoSettings: UpdatedConvoSettings;
+}
 export interface UpdateSettingsMutationArgs {
   updatedSettings: UpdatedSettingsInput;
 }
@@ -143,9 +246,38 @@ export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
 
 export namespace QueryResolvers {
   export interface Resolvers<TContext = Context, TypeParent = {}> {
+    userContacts?: UserContactsResolver<Contact[], TypeParent, TContext>;
+
+    userContact?: UserContactResolver<Contact, TypeParent, TContext>;
+
+    getConversation?: GetConversationResolver<Conversation, TypeParent, TContext>;
+
     userSettings?: UserSettingsResolver<Settings, TypeParent, TContext>;
 
     me?: MeResolver<Maybe<string>, TypeParent, TContext>;
+  }
+
+  export type UserContactsResolver<
+    R = Contact[],
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type UserContactResolver<
+    R = Contact,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, UserContactArgs>;
+  export interface UserContactArgs {
+    id: string;
+  }
+
+  export type GetConversationResolver<
+    R = Conversation,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, GetConversationArgs>;
+  export interface GetConversationArgs {
+    id: string;
   }
 
   export type UserSettingsResolver<
@@ -158,6 +290,105 @@ export namespace QueryResolvers {
     Parent,
     TContext
   >;
+}
+
+export namespace ContactResolvers {
+  export interface Resolvers<TContext = Context, TypeParent = Contact> {
+    name?: NameResolver<string, TypeParent, TContext>;
+
+    phone?: PhoneResolver<string, TypeParent, TContext>;
+
+    status?: StatusResolver<OnlineStatus, TypeParent, TContext>;
+
+    lastConnection?: LastConnectionResolver<Maybe<string>, TypeParent, TContext>;
+
+    requestStatus?: RequestStatusResolver<ContactRequestStatus, TypeParent, TContext>;
+  }
+
+  export type NameResolver<R = string, Parent = Contact, TContext = Context> = Resolver<
+    R,
+    Parent,
+    TContext
+  >;
+  export type PhoneResolver<R = string, Parent = Contact, TContext = Context> = Resolver<
+    R,
+    Parent,
+    TContext
+  >;
+  export type StatusResolver<
+    R = OnlineStatus,
+    Parent = Contact,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type LastConnectionResolver<
+    R = Maybe<string>,
+    Parent = Contact,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type RequestStatusResolver<
+    R = ContactRequestStatus,
+    Parent = Contact,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+}
+
+export namespace ConversationResolvers {
+  export interface Resolvers<TContext = Context, TypeParent = Conversation> {
+    id?: IdResolver<string, TypeParent, TContext>;
+
+    senderId?: SenderIdResolver<string, TypeParent, TContext>;
+
+    messages?: MessagesResolver<Message[], TypeParent, TContext>;
+
+    participants?: ParticipantsResolver<string[], TypeParent, TContext>;
+
+    conversationName?: ConversationNameResolver<Maybe<string>, TypeParent, TContext>;
+  }
+
+  export type IdResolver<
+    R = string,
+    Parent = Conversation,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type SenderIdResolver<
+    R = string,
+    Parent = Conversation,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type MessagesResolver<
+    R = Message[],
+    Parent = Conversation,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type ParticipantsResolver<
+    R = string[],
+    Parent = Conversation,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type ConversationNameResolver<
+    R = Maybe<string>,
+    Parent = Conversation,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+}
+
+export namespace MessageResolvers {
+  export interface Resolvers<TContext = Context, TypeParent = Message> {
+    content?: ContentResolver<string, TypeParent, TContext>;
+
+    sentTime?: SentTimeResolver<string, TypeParent, TContext>;
+  }
+
+  export type ContentResolver<
+    R = string,
+    Parent = Message,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
+  export type SentTimeResolver<
+    R = string,
+    Parent = Message,
+    TContext = Context
+  > = Resolver<R, Parent, TContext>;
 }
 
 export namespace SettingsResolvers {
@@ -206,6 +437,26 @@ export namespace SettingsResolvers {
 
 export namespace MutationResolvers {
   export interface Resolvers<TContext = Context, TypeParent = {}> {
+    addFriend?: AddFriendResolver<Contact, TypeParent, TContext>;
+
+    removeFriend?: RemoveFriendResolver<Contact, TypeParent, TContext>;
+
+    acceptFriendRequest?: AcceptFriendRequestResolver<
+      Maybe<Contact>,
+      TypeParent,
+      TContext
+    >;
+
+    createConversation?: CreateConversationResolver<Conversation, TypeParent, TContext>;
+
+    sendMessage?: SendMessageResolver<Message, TypeParent, TContext>;
+
+    updateConversationSettings?: UpdateConversationSettingsResolver<
+      Conversation,
+      TypeParent,
+      TContext
+    >;
+
     updateSettings?: UpdateSettingsResolver<Settings, TypeParent, TContext>;
 
     resetSettings?: ResetSettingsResolver<Settings, TypeParent, TContext>;
@@ -215,6 +466,65 @@ export namespace MutationResolvers {
     logout?: LogoutResolver<string, TypeParent, TContext>;
 
     signUpByEmail?: SignUpByEmailResolver<AuthUser, TypeParent, TContext>;
+  }
+
+  export type AddFriendResolver<R = Contact, Parent = {}, TContext = Context> = Resolver<
+    R,
+    Parent,
+    TContext,
+    AddFriendArgs
+  >;
+  export interface AddFriendArgs {
+    friendId: string;
+  }
+
+  export type RemoveFriendResolver<
+    R = Contact,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, RemoveFriendArgs>;
+  export interface RemoveFriendArgs {
+    friendId: string;
+  }
+
+  export type AcceptFriendRequestResolver<
+    R = Maybe<Contact>,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, AcceptFriendRequestArgs>;
+  export interface AcceptFriendRequestArgs {
+    id: string;
+  }
+
+  export type CreateConversationResolver<
+    R = Conversation,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, CreateConversationArgs>;
+  export interface CreateConversationArgs {
+    data: CreateConversationInput;
+  }
+
+  export type SendMessageResolver<
+    R = Message,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, SendMessageArgs>;
+  export interface SendMessageArgs {
+    conversationId: string;
+
+    newMessage: SendMessageInput;
+  }
+
+  export type UpdateConversationSettingsResolver<
+    R = Conversation,
+    Parent = {},
+    TContext = Context
+  > = Resolver<R, Parent, TContext, UpdateConversationSettingsArgs>;
+  export interface UpdateConversationSettingsArgs {
+    conversationId: string;
+
+    updatedConvoSettings: UpdatedConvoSettings;
   }
 
   export type UpdateSettingsResolver<
@@ -357,6 +667,9 @@ export interface DeprecatedDirectiveArgs {
 
 export type IResolvers<TContext = Context> = {
   Query?: QueryResolvers.Resolvers<TContext>;
+  Contact?: ContactResolvers.Resolvers<TContext>;
+  Conversation?: ConversationResolvers.Resolvers<TContext>;
+  Message?: MessageResolvers.Resolvers<TContext>;
   Settings?: SettingsResolvers.Resolvers<TContext>;
   Mutation?: MutationResolvers.Resolvers<TContext>;
   AuthUser?: AuthUserResolvers.Resolvers<TContext>;

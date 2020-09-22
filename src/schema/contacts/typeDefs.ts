@@ -24,7 +24,7 @@ const typeDefs = gql`
   }
 
   type Contact {
-    name: String!
+    firstName: String!
     phone: String!
     status: OnlineStatus!
     lastConnection: String

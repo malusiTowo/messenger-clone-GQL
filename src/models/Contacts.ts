@@ -2,26 +2,26 @@ import mongoose, { Document, Model, Types } from "mongoose";
 
 const { Schema } = mongoose;
 
-enum ContactRequestStatus {
+export enum ContactRequestStatus {
   PENDING_BY_RECEPIENT = 0,
   ACCEPTED = 1,
   BLOCKED = 2,
 }
 
-enum OnlineStatus {
+export enum OnlineStatus {
   ONLINE = 0,
   OFFLINE = 1,
 }
 
 interface IContactSchema extends Document {
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   userId: Types.ObjectId;
   friendId: Types.ObjectId;
-  userStatus: OnlineStatus;
-  friendStatus: OnlineStatus;
-  userLastConnectionTime: Date;
-  friendLastConnectTime: Date;
+  userStatus?: OnlineStatus;
+  friendStatus?: OnlineStatus;
+  userLastConnectionTime?: Date;
+  friendLastConnectTime?: Date;
   requestStatus: ContactRequestStatus;
 }
 
@@ -36,11 +36,11 @@ const ContactSchema = new Schema(
       default: new Date(),
     },
     userId: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "user",
     },
     friendId: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "user",
     },
     userStatus: {
